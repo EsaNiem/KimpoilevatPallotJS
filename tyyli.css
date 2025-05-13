@@ -1,0 +1,94 @@
+﻿/* Sivun taustan väriksi sininen */
+body {
+  background-color: lightblue;
+}
+
+
+/* Otsikon väri ja asettelu, 10 pikselin verran irti vasemmalta */
+h1 {
+  color: navy;
+  margin-left: 10px;
+}
+
+
+/* Kuvan leveydeksi 60 pikseliä */
+img {
+  width: 60px;
+}
+
+
+/* Tulostettavan tekstin asetukset */
+.tulostus {
+  background-color: white;
+  font-weight: bold;
+  font-size: 17px;
+  text-align: center;
+  border-style: outset;
+  padding: 8px 8px;
+  width: 300px;
+  margin-left: 15px;
+}
+
+
+/* Laatikon nimen asettelu, 5 pikselin verran irti vasemmalta ja teksti boldattuna  */
+label {
+  margin-left: 5px;
+  font-weight: bold;
+}
+
+
+/* Painikkeen asetukset, väri sininen, leveys, jne. */
+button {
+  background-color: #3BA3FF;
+  color: white;
+  padding: 12px 21px;
+  text-align: center;
+  display: inline-block;
+  font-size: 15px;
+  width: 175px;
+  margin-left: 15px;
+}
+
+
+/* Koristekehykset painikkeiden ja kenttien ympärille */
+.kehykset {
+  border-style: outset;
+  padding: 10px 10px;
+  width: 180px;
+}
+
+
+#pelialue {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  background: white;
+  border-style: inset;
+}
+
+
+#kiitos {
+  text-align: center;
+  margin-top: 300px;
+  font-size: 30px;
+}
+
+
+#K_pallo {
+  border-radius: 50%;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: #E80B0B;
+  border: 1px solid #003366;
+}
+
+
+#P_pallo {
+  border-radius: 50%;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: #99ccff;
+  border: 1px solid #003366;
+}

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<! -- Pallopeli by Esa N -->
+
+	<html>
+
+	<head>
+
+		<title>Kimpoilevat Pallot</title>
+
+		<! -- Ladataan pelille värit ja fontit tyylitiedostosta -->
+			<link rel="stylesheet" href="tyyli.css">
+
+	</head>
+
+	<body onload="init()">
+
+		<! -- Luodaan tulostusalue pelin elementeille -->
+			<div class="tulostus" id="tulostus">Aloita peli</div>
+			<div class="tulostus" id="tulostus2"></div>
+			<div class="tulostus" id="tulostus3"></div>
+			<br>
+			<div id="pelialue">
+				<div id="kiitos"></div>
+				<div id="K_pallo"></div>
+				<div id="P_pallo"></div>
+			</div>
+			</div>
+			<div id='sekunnit-laskuri'> </div>
+			<script>
+
+				// Pelin äänet
+				var bounce = new Audio("bounce.wav");
+				var gameover = new Audio("gameover.wav");
+				var fast = new Audio("fast.wav");
+
+				// CPU pallo
+				var K_x_suunta = 1;
+				var K_y_suunta = 1;
+				var K_x_sijainti = 0;
+				var K_y_sijainti = 0;
+				var K_sade = 15;
+				var K_vauhti = 0;
+
+
+				// Pelaaja
+				var P_x_suunta = 0;
+				var P_y_suunta = 0;
+				var P_x_sijainti = 0;
+				var P_y_sijainti = 0;
+				var P_sade = 15;
+				var P_vauhti = 6;
+
+
+				// Alustetaan sekuntikello
+				var sekunnit = 0;
+
+				// Pelin sekuntikello alkaa tästä
+				var stop = setInterval(KasvatetaanSekuntteja, 1000);
+
+
+				// Pelin ajastimet (asiat missä tarvitaan päivitystä)
+				var CPU_sekunnit = 0;
+				var CPU_aika = 0;
+				var pelinkulku_aika;
+
+
+				// Pelin resertointi uutta varten
+				function UusiPeli() {
+
+					// Kysytään halutaanko pelata uudestaan
+					if (confirm("Kestit " + sekunnit + " sekuntia. Haluatko pelata uudestaan?")) {
+
+						//-----------------------------------------------------------------------------------
+						// Mikäli kyllä, tehään alustukset
+						// Nollataan koneen asetukset 
+						K_x_suunta = 1;
+						K_y_suunta = 1;
+						K_x_sijainti = 0;
+						K_y_sijainti = 0;
+						K_sade = 15;
+						K_vauhti = 0;
+
+						// Nollataan pelaajan asetukset
+						P_x_suunta = 0;
+						P_y_suunta = 0;
+						P_x_sijainti = 0;
+						P_y_sijainti = 0;
+						P_sade = 15;
+						P_vauhti = 6;
+
+						// Nollataan sekunnit
+						sekunnit = 0;
+
+						// Tietokoneen kello ja aika alustus
+						CPU_aika = 0;
+						AI_kello = 0;
+
+						// Ladataan ohjelma ja tietokoneen pallon liikkeet
+						CPU_liikkeet();
+						init();
+
+						// Käynnistetään sekuntikello
+						stop = setInterval(KasvatetaanSekuntteja, 1000);
+
+						document.getElementById("tulostus").innerHTML = "Kesto: " + sekunnit + " sekuntia";
+						//-----------------------------------------------------------------------------------
+					}
+					else {
+					
+						// Tyhjennetään pelialue palloista
+						
+					
+					
+						// Jos ei tahdota pelata, annetaan viesti tästä
+						document.getElementById("kiitos").innerHTML = "Kiitos pelaamisesta!";
+
+						return;
+					}
+				}
+
+				// Tietokoneen pallon liikeradat
+				// --------------------------------------------------------------
+				// Koneen liike 1
+				function liike_1() {
+					K_x_suunta = Math.floor(Math.random() * -1) + 5;
+					K_Y_suunta = Math.floor(Math.random() * -1) + 7;
+					K_vauhti = 6;
+				}
+
+				// Koneen liike 2
+				function liike_2() {
+					fast.play(); // Toistetaan nopea ääniefekti
+					K_x_suunta = -1;
+					K_Y_suunta = -1;
+					K_vauhti = 8;		
+				}
+
+				// Koneen liike 3
+				function liike_3() {
+					K_x_suunta = Math.floor(Math.random() * 2) + -1;
+					K_Y_suunta = Math.floor(Math.random() * -1) + 3;
+					K_vauhti = 7;
+				}
+
+				// Koneen liike 4
+				function liike_4() {
+					fast.play(); // Toistetaan nopea ääniefekti
+					K_x_suunta = 1;
+					K_Y_suunta = 0;
+					K_vauhti = 8;	
+				}
+
+
+				// Funktio sisältää eri variaatioita CPU pallon nopeudesta ja liikkeistä
+				function CPU_liikkeet() {
+					// Jos aika on jaollinen kolmella, tehdään liike 1
+					if (CPU_sekunnit % 3 === 0) {
+						liike_1();
+					}
+					// Jos aika on jaollinen viidellä, tehdään liike 2
+					if (CPU_sekunnit % 5 === 0) {
+						liike_2();
+					}
+					// Jos aika on jaollinen kahdeksalla, tehdään liike 3
+					if (CPU_sekunnit % 8 === 0) {
+						liike_3();
+					}
+					// Jos aika on jaollinen kymmenellä, tehdään liike 4
+					if (CPU_sekunnit % 10 === 0) {
+						liike_4();
+					}
+
+					// Päivitetään joka sekunnin välin
+					CPU_aika = setTimeout(CPU_liikkeet, 1000);
+
+					// Kasvatetaan tietokoneen kelloa sekunnilla
+					CPU_sekunnit += 1;
+
+				}
+				// Kutsutaan tietokoneen pallon liikeradat
+				CPU_liikkeet();
+				// --------------------------------------------------------------	
+
+
+				function liiku() {
+
+					// Pallo koneen asetukset-------------------------------------------
+					K_x_sijainti = parseInt(K_pallo.style.left) + K_x_suunta * K_vauhti;
+					K_pallo.style.left = K_x_sijainti + 'px';
+
+					K_y_sijainti = parseInt(K_pallo.style.top) + K_y_suunta * K_vauhti;
+					K_pallo.style.top = K_y_sijainti + 'px';
+
+					//------------------------------------------------------------------
+
+					// Pelaajan asetukset-----------------------------------------------
+					P_x_sijainti = parseInt(P_pallo.style.left) + P_x_suunta * P_vauhti;
+					P_pallo.style.left = P_x_sijainti + 'px';
+
+					P_y_sijainti = parseInt(P_pallo.style.top) + P_y_suunta * P_vauhti;
+					P_pallo.style.top = P_y_sijainti + 'px';
+
+					//------------------------------------------------------------------
+
+					// Tehdään törmäyksen laskelmat
+					let dx = P_x_sijainti - K_x_sijainti;
+					let dy = P_y_sijainti - K_y_sijainti;
+
+					// Törmäysetäisyys on yhtä kuin ympyröiden pinta-ala
+					let etaisyys = Math.sqrt(dx * dx + dy * dy);
+
+					document.getElementById("tulostus").innerHTML = "Kesto: " + sekunnit + " s.";
+
+					document.getElementById("tulostus2").innerHTML = "Pelaaja: X: " + P_x_suunta + " Y: " + P_y_suunta + " || " +
+						"CPU X: " + K_x_suunta + " Y: " + K_y_suunta;
+
+					document.getElementById("tulostus3").innerHTML = "CPU nopeus: " + K_vauhti;
+
+					// Koneen raja-asetukset
+					//------------------------------------------
+					// kun kone törmää yläkulmaan
+					if (K_y_sijainti < 0) {
+						K_y_suunta = 1;
+						bounce.play();
+					}
+					// kun kone törmää alakulmaan
+					if (K_y_sijainti > 570) {
+						K_y_suunta = -1;
+						bounce.play();
+					}
+					// kun kone törmää oikeaan reunaan
+					if (K_x_sijainti > 570) {
+						K_x_suunta = -1;
+						bounce.play();
+					}
+					// kun kone törmää vasempaan reunaan
+					if (K_x_sijainti < 0) {
+						K_x_suunta = 1;
+						bounce.play();
+					}
+
+					// Pelaajan raja-setukset
+					//------------------------------------------
+					// kun kone törmää yläkulmaan
+					if (P_y_sijainti < 0) {
+						P_y_suunta = 1;
+						bounce.play();
+					}
+					// kun kone törmää alakulmaan
+					if (P_y_sijainti > 570) {
+						P_y_suunta = -1;
+						bounce.play();
+					}
+					// kun kone törmää oikeaan reunaan
+					if (P_x_sijainti > 570) {
+						P_x_suunta = -1;
+						bounce.play();
+					}
+					// kun kone törmää vasempaan reunaan
+					if (P_x_sijainti < 0) {
+						P_x_suunta = 1;
+						bounce.play();
+					}
+					//------------------------------------------	  
+
+					
+					
+					// Päivitetään ruutua joka 10 millisekunnin välein
+					pelinkulku_aika = setTimeout(liiku, 10);
+
+					// Mikäli etäisyys on pienempi kuin säteiden yhteenlaskettu summa, tapahtuu törmäys
+					if (etaisyys < P_sade + K_sade) {
+						// Pelaajien vauhti pysäytetään
+						K_vauhti = 0;
+						P_vauhti = 0;
+
+						// Soitetaan ääniefekti
+						gameover.play();
+
+						// Pysäytetään sekuntikello
+						PysaytetaanSekunnit();
+
+						// Pysäytetään ajastimet
+						clearTimeout(CPU_aika);
+						clearTimeout(pelinkulku_aika);
+
+						document.getElementById("tulostus").innerHTML = "Kestit " + sekunnit + " sekuntia";
+
+						// Kutsutaan funktio uudelleen pelaamista varten
+						UusiPeli();
+					}
+				}
+
+				// Funktio pallon ohjaamiseen
+				function vaihdaSuunta(evt) {
+					if (evt.keyCode == 38) { // Nuoli ylös
+						P_y_suunta = -1;
+					}
+
+					if (evt.keyCode == 40) { // Nuoli alas
+						P_y_suunta = 1;
+					}
+
+					if (evt.keyCode == 37) { // Nuoli vasemmalle
+						P_x_suunta = -1;
+					}
+
+					if (evt.keyCode == 39) { // Nuoli oikealle
+						P_x_suunta = 1;
+					}
+				}
+
+				// Kutsutaan sekuntien laskeminen
+				function KasvatetaanSekuntteja() {
+					sekunnit += 1;
+				}
+
+				// Lopetetaan sekuntien laskeminen
+				function PysaytetaanSekunnit() {
+					clearInterval(stop);
+				}
+
+				// Ajetaan ensimmäisenä ohjelmana ja annetaan aloituskoordinaatit palloille
+				function init() {
+					var K_pallo = document.getElementById('K_pallo');
+					var P_pallo = document.getElementById('P_pallo');
+
+					K_pallo.style.left = '0px';
+					K_pallo.style.top = '0px';
+
+					P_pallo.style.left = '250px';
+					P_pallo.style.top = '500px';
+
+					window.addEventListener('keydown', vaihdaSuunta);
+					liiku(); // Aloita animaatio kun sivu on ladannut
+				}
+
+			</script>
+
+			<! -- JavaScript loppuu tähän -->
+
+	</body>
+
+	</html>
